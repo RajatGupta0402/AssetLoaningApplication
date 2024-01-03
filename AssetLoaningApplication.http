@@ -1,0 +1,6 @@
+@AssetLoaningApplication_HostAddress = http://localhost:5062
+
+GET {{AssetLoaningApplication_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
