@@ -13,7 +13,7 @@ public class TransactionService
         this.transactionRepopsitory = repository; 
     }
 
-    public object AddTransaction(string type, AddTransaction loanAssetTransaction)
+    public TransactionDetails AddTransaction(string type, AddTransaction loanAssetTransaction)
     {
        
 
@@ -37,7 +37,7 @@ public class TransactionService
 
     }
 
-    public object UpdateTransaction(string type, UpdateTransaction loanAssetTransaction)
+    public TransactionDetails UpdateTransaction(string type, UpdateTransaction loanAssetTransaction)
     {
 
         
@@ -83,7 +83,7 @@ public class TransactionService
         
     }
 
-    public object GetByFilter(Guid userId, FilterTransaction filterTransaction)
+    public List<GetLoanTransaction> GetByFilter(Guid userId, FilterTransaction filterTransaction)
     {
         
           
