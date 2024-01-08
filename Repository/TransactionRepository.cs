@@ -11,13 +11,17 @@ public class TransactionRepository
         this.dbContext = dbContext;
     }
 
-    public object AddLoanAsset(AddTransaction loanAssetTransaction)
+    public TransactionDetails AddLoanAsset(AddTransaction loanAssetTransaction)
     {
         try
         {
             using (var db = dbContext)
             {
-
+                var requestingUser = db.UserDetails.FirstOrDefault(a => a.userId == loanAssetTransaction.requestingUserId);
+                if (requestingUser == null || requestingUser.role != "Supervisor")
+                {
+                    throw new KeyNotFoundException("Requesting supervisor not found");
+                }
                 var supervisor = db.UserDetails.FirstOrDefault(a => a.userId == loanAssetTransaction.supervisorId);
                 var student = db.UserDetails.FirstOrDefault(a => a.userId == loanAssetTransaction.studentId);
                 var asset = db.AssetDetails.FirstOrDefault(a => a.assetId == loanAssetTransaction.assetId);
@@ -77,13 +81,19 @@ public class TransactionRepository
         }
     }
 
-    public object AddReturnAsset(AddTransaction returnAssetTransaction)
+    public TransactionDetails AddReturnAsset(AddTransaction returnAssetTransaction)
     {
         try
         {
+            
             using (var db = dbContext)
-            { 
-            var returnAsset = db.AssetDetails.FirstOrDefault(a => a.assetId == returnAssetTransaction.assetId);
+            {
+                var requestingUser = db.UserDetails.FirstOrDefault(a => a.userId == returnAssetTransaction.requestingUserId);
+                if (requestingUser == null || requestingUser.role != "Supervisor")
+                {
+                    throw new KeyNotFoundException("Requesting supervisor not found");
+                }
+                var returnAsset = db.AssetDetails.FirstOrDefault(a => a.assetId == returnAssetTransaction.assetId);
 
             if (returnAsset == null)
             {
@@ -159,12 +169,17 @@ public class TransactionRepository
         }
     }
 
-    public object UpdateLoanAsset(UpdateTransaction loanAssetTransaction)
+    public TransactionDetails UpdateLoanAsset(UpdateTransaction loanAssetTransaction)
     {
         try
         {
             using (var db = dbContext)
             {
+                var requestingUser = db.UserDetails.FirstOrDefault(a => a.userId == loanAssetTransaction.requestingUserId);
+                if (requestingUser == null || requestingUser.role != "Supervisor")
+                {
+                    throw new KeyNotFoundException("Requesting supervisor not found");
+                }
                 var transaction = db.TransactionDetails.FirstOrDefault(a => a.transactionId == loanAssetTransaction.transactionId);
                 if (transaction == null || transaction.transactionType != "Loan")
                 {
@@ -236,14 +251,18 @@ public class TransactionRepository
         }
     }
 
-    public object UpdateReturnAsset(UpdateTransaction returnAssetTransaction)
+    public TransactionDetails UpdateReturnAsset(UpdateTransaction returnAssetTransaction)
     {
         try
         {
             using (var db = dbContext)
             {
 
-
+                var requestingUser = db.UserDetails.FirstOrDefault(a => a.userId == returnAssetTransaction.requestingUserId);
+                if (requestingUser == null || requestingUser.role != "Supervisor")
+                {
+                    throw new KeyNotFoundException("Requesting supervisor not found");
+                }
                 var transaction = db.TransactionDetails.FirstOrDefault(a => a.transactionId == returnAssetTransaction.transactionId);
                 if (transaction == null)
                 {
@@ -331,12 +350,24 @@ public class TransactionRepository
             throw;
         }
     }
-    public object GetLoanAsset(Guid userId,Guid transactionId)
+    public GetLoanTransaction GetLoanAsset(Guid userId,Guid transactionId)
     {
         try
         {
             using (var db = dbContext)
             {
+                var userDb = db.UserDetails.Where(a => a.userId == userId).FirstOrDefault();
+
+
+                if (userDb == null)
+                {
+                    throw new KeyNotFoundException("User Not Found");
+                }
+
+                if (userDb.role != "Supervisor" && userDb.role != "Student")
+                {
+                    throw new UnauthorizedAccessException("Unauthorised user");
+                }
                 var getLoanTransaction = new GetLoanTransaction();
                 var transaction = db.TransactionDetails.Where(a => a.transactionId == transactionId).FirstOrDefault();
                 if (transaction != null && transaction.transactionType == "Loan")
@@ -403,12 +434,24 @@ public class TransactionRepository
         }
     }
 
-    public object GetReturnAsset(Guid userId, Guid transactionId)
+    public GetReturnTransaction GetReturnAsset(Guid userId, Guid transactionId)
     {
         try
         {
             using (var db = dbContext)
             {
+                var userDb = db.UserDetails.Where(a => a.userId == userId).FirstOrDefault();
+
+
+                if (userDb == null)
+                {
+                    throw new KeyNotFoundException("User Not Found");
+                }
+
+                if (userDb.role != "Supervisor" && userDb.role != "Student")
+                {
+                    throw new UnauthorizedAccessException("Unauthorised user");
+                }
                 var getReturnTransaction = new GetReturnTransaction();
                 var returnTransaction = db.TransactionDetails.FirstOrDefault(a => a.transactionId == transactionId);
                 if (returnTransaction != null && returnTransaction.transactionType == "Return")
@@ -461,12 +504,25 @@ public class TransactionRepository
         }
     }
 
-    public object GetByFilter(Guid userId, FilterTransaction filterTransaction)
+    public List<GetLoanTransaction> GetByFilter(Guid userId, FilterTransaction filterTransaction)
     {
         try
         {
             using (var db = dbContext)
             {
+                if (userId == null)
+                {
+                    throw new KeyNotFoundException("User Id cannot be null");
+                }
+                var user = dbContext.UserDetails.FirstOrDefault(a => a.userId == userId);
+                if (user == null)
+                {
+                    throw new KeyNotFoundException("User Not Found");
+                }
+                if (user.role != "Supervisor" && user.role != "Student")
+                {
+                    throw new UnauthorizedAccessException("Unauthorized user");
+                }
                 var requestingUser = db.UserDetails.FirstOrDefault(a => a.userId == userId);
 
                 List<GetLoanTransaction> filteredTransactions = new List<GetLoanTransaction>();
@@ -644,4 +700,6 @@ public class TransactionRepository
             throw;
         }
     }
+
+    
 }

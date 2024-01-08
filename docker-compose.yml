@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  assetloaningdb:
+    container_name: AssetLoaningDb
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - "8002:1433"
+    environment:
+       - ACCEPT_EULA=Y
+       - MSSQL_SA_PASSWORD=hello@123
+  assetloaningapp:
+    container_name : AssetLoaningApplication
+    image: assetloaningapplication:dev 
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports: 
+      - "32769:8080"
+    depends_on:
+    - assetloaningdb
+    environment:
+     - DB_HOST=assetloaningdb
+     - DB_NAME=AssetLoaningDb
+     - DB_SA_PASSWORD=hello@123
+
+

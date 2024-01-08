@@ -10,10 +10,10 @@ namespace AssetLoaningApplication.Controllers
     [ApiController]
     public class TransactionController : Controller
     {
-        private readonly AssetLoanDbContext dbContext;
-        public TransactionController(AssetLoanDbContext dbContext)
+        private readonly TransactionService transactionService;
+        public TransactionController(TransactionService transactionService)
         {
-            this.dbContext = dbContext;
+            this.transactionService = transactionService;
         }
 
         public AssetLoanDbContext DbContext { get; }
@@ -29,7 +29,6 @@ namespace AssetLoaningApplication.Controllers
         {
             try
             {
-                var transactionService = new TransactionService(dbContext);
                 var result = transactionService.AddTransaction(type,loanAssetTransaction);
                 return Ok(result);
             }
@@ -61,7 +60,6 @@ namespace AssetLoaningApplication.Controllers
         {
             try
             {
-                var transactionService = new TransactionService(dbContext);
                 var result = transactionService.UpdateTransaction(type, loanAssetTransaction);
                 return Ok(result);
             }
@@ -92,7 +90,6 @@ namespace AssetLoaningApplication.Controllers
         {
             try
             {
-                var transactionService = new TransactionService(dbContext); 
                 var result = transactionService.GetTransaction(type, requestingUserId, transactionId);
                 return Ok(result);
             }
@@ -126,7 +123,6 @@ namespace AssetLoaningApplication.Controllers
         {
             try
             {
-                var transactionService = new TransactionService(dbContext);
                 var result = transactionService.GetByFilter(requestingUserId, filterTransaction);
                 return Ok(result);
             }
