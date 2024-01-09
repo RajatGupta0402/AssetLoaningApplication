@@ -2,7 +2,7 @@
 {
     public class GetLoanTransaction
     {
-        public Guid transactionId { get; set; }
+        public Guid loanTransactionId { get; set; }
         public string transactionType { get; set; }
         public Guid loaningSupervisorId { get; set; }
         public string loaningSupervisorName { get; set; }
@@ -14,6 +14,7 @@
         public Guid? receivingSupervisorId { get; set; } = null;
         public string? receivingSupervisorName { get; set; } = null;
         public DateOnly? receivedDate { get; set; } = null;
+        public Guid? receivingTransactionId {  get; set; } = null;
 
     }
 }

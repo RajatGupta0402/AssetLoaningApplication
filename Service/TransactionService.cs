@@ -59,7 +59,7 @@ public class TransactionService
         }
     
 
-    public object GetTransaction(string type,Guid userId, Guid transactionId)
+    public GetLoanTransaction GetTransaction(string type,Guid userId, Guid transactionId)
     {
         
             

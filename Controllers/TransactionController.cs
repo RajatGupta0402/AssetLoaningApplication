@@ -34,15 +34,19 @@ namespace AssetLoaningApplication.Controllers
             }
             catch (UnauthorizedAccessException ex)
             {
-                return StatusCode(400, $"{ex.Message}");
+                return StatusCode(401, $"{ex.Message}");
             }
             catch (KeyNotFoundException ex)
+            {
+                return StatusCode(404, $"{ex.Message}");
+            }
+            catch (InvalidOperationException ex)
             {
                 return StatusCode(400, $"{ex.Message}");
             }
             catch (Exception ex)
             {
-                return StatusCode(404,$"{ex.Message}");
+                return StatusCode(500,$"{ex.Message}");
             }
            
         }
